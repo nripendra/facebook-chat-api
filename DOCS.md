@@ -8,7 +8,7 @@
 * [`api.getCurrentUserID`](#getCurrentUserID)
 * [`api.getFriendsList`](#getFriendsList)
 * [`api.getOnlineUsers`](#getOnlineUsers)
-* [`api.getThreadHistory`](#searchForThread)
+* [`api.getThreadHistory`](#getThreadHistory)
 * [`api.getThreadList`](#getThreadList)
 * [`api.deleteThread`](#deleteThread)
 * [`api.getUserID`](#getUserID)
@@ -56,7 +56,7 @@ __Example (Email & Password then save appState to file)__
 ```js
 login({email: "FB_EMAIL", password: "FB_PASSWORD"}, function callback (err, api) {
     if(err) return console.error(err);
-    
+
     fs.writeFileSync('appstate.json', JSON.stringify(api.getAppState()));
 });
 ```
@@ -171,7 +171,7 @@ Returns an array of objects with some information about your friends.
 
 __Arguments__
 
-* `callback(err, arr)` - A callback called when the query is done (either with an error or with an confirmation object). `arr` is an array of objects with the following fields: `alternateName`, `firstName`, `gender`, `userID`, `isFriend`, `fullName`, `profilePicture`, `type`, `profileUrl`, `vanity`.
+* `callback(err, arr)` - A callback called when the query is done (either with an error or with an confirmation object). `arr` is an array of objects with the following fields: `alternateName`, `firstName`, `gender`, `userID`, `isFriend`, `fullName`, `profilePicture`, `type`, `profileUrl`, `vanity`, `isBirthday`.
 
 __Example__
 
@@ -292,7 +292,7 @@ Will get some information about the given users.
 __Arguments__
 
 * `ids` - Either a string/number for one ID or an array of strings/numbers for a batched query.
-* `callback(err, obj)` - A callback called when the query is done (either with an error or with an confirmation object). `obj` is a mapping from userId to another object containing the following properties: id, name, firstName, vanity, thumbSrc, uri, gender, type, is_friend, is_birthday, searchTokens, alternateName.
+* `callback(err, obj)` - A callback called when the query is done (either with an error or with an confirmation object). `obj` is a mapping from userId to another object containing the following properties: id, name, firstName, vanity, thumbSrc, uri, gender, type, isFriend, isBirthday, searchTokens, alternateName.
 
 __Example__
 
@@ -304,7 +304,7 @@ login({email: "FB_EMAIL", password: "FB_PASSWORD"}, function callback (err, api)
       if(err) return console.error(err);
 
       for(var prop in ret) {
-        if(ret.hasOwnProperty(prop) && ret[prop].is_birthday) {
+        if(ret.hasOwnProperty(prop) && ret[prop].isBirthday) {
           api.sendMessage("Happy birthday :)", prop);
         }
       }
@@ -338,7 +338,7 @@ If `type` is `message`, the object will contain the following fields:
   + `location`
   + `messageID`: A string representing the message ID.
   + `attachments`: An array of attachments to the message.
-  
+
 If `attachments` contains an object with type is `"sticker"`, the same object will contain the following fields: `url`, `stickerID`, `packID`, `frameCount`, `frameRate`, `framesPerRow`, `framesPerCol`, `spriteURI`, `spriteURI2x`, `height`, `width`, `caption`, `description`.
 
 If `attachments` contains an object with type is `"file"`, the same object will contain the following fields: `name`, `url`, `ID`, `fileSize`, `isMalicious`, `mimeType`.
@@ -365,8 +365,11 @@ If `type` is `"typ"` then the object will have the following fields:
 - `from`: ID of the user who started/stopped typing
 - `threadID`: Current threadID
 - `from_mobile`: Boolean representing whether or not the person's using a mobile device to type
-- 
 
+If `type` is `"read_receipt"` then the object will have the following fileds:
+- `reader`: ID of the user who just read the message
+- `time`: the time at which the reader read the message
+- `threadID`: the thread in which the message was read
 
 <a name="presence" />
 If enabled through [setOptions](#setOptions), this will also return presence, (`type` will be `"presence"`), which is the online status of the user's friends. The object given to the callback will have the following fields:
@@ -483,7 +486,7 @@ __Arguments__
 * `threadID`: A string, number, or array representing a thread. It happens to be someone's userId in the case of a one to one conversation or an array of userIds when starting a new group chat.
 * `callback(err, messageInfo)`: A callback called when sending the message is done (either with an error or with an confirmation object). `messageInfo` contains the `threadID` where the message was sent and a `messageID`, as well as the `timestamp` of the message.
 
-__Message Object__: 
+__Message Object__:
 
 Various types of message can be sent:
 * *Regular:* set field `body` to the desired message as a string.

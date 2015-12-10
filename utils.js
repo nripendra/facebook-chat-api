@@ -298,6 +298,15 @@ function formatTyp(event) {
   };
 }
 
+function formatReadReceipt(event) {
+  return {
+    reader: event.reader,
+    time: event.time,
+    threadID: event.realtime_viewer_fbid,
+    type: 'read_receipt',
+  };
+}
+
 function getFrom(str, startToken, endToken) {
   var start = str.indexOf(startToken) + startToken.length;
   if(start < startToken.length) return "";
@@ -503,5 +512,6 @@ module.exports = {
   formatPresence: formatPresence,
   formatTyp: formatTyp,
   formatCookie: formatCookie,
-  formatThread: formatThread
+  formatThread: formatThread,
+  formatReadReceipt: formatReadReceipt,
 };
